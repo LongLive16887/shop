@@ -54,8 +54,8 @@ export default function Navbar() {
 
   const navigation = [
     { name: 'Home', href: '/', icon: HomeIcon },
-    { name: 'Products', href: '/products', icon: TagIcon },
-    { name: 'About', href: '/about', icon: InformationCircleIcon },
+    { name: 'Products', href: '/products', icon: TagIcon },/* 
+    { name: 'About', href: '/about', icon: InformationCircleIcon }, */
     { name: 'Contact', href: '/contact', icon: PhoneIcon },
   ];
 
@@ -73,7 +73,7 @@ export default function Navbar() {
                     src="/kamikoto-logo-transparent-darkish-logo-for-better-visibility.png"
                     alt="KamiKoto"
                   />
-                  <span className="text-2xl font-extrabold text-white ml-2">KamiKoto</span>
+                  <span className="text-2xl font-extrabold text-white ml-2">Mirshod's Market</span>
                 </Link>
                 {/* Desktop Navigation */}
                 <div className="hidden md:flex md:ml-10 space-x-4">

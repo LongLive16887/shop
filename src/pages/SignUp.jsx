@@ -1,5 +1,5 @@
 // SignUp.jsx
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { auth, db } from '../firebase/config';
 import {
   createUserWithEmailAndPassword,
@@ -12,7 +12,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../redux/userSlice';
-import ReCAPTCHA from 'react-google-recaptcha'; 
 import { motion } from 'framer-motion';
 
 function SignUp() {
@@ -21,17 +20,11 @@ function SignUp() {
   const [name, setName] = useState('');
   const [profilePic, setProfilePic] = useState('');
   const [loading, setLoading] = useState(false);
-  const [captchaVerified, setCaptchaVerified] = useState(false); 
-  const recaptchaRef = useRef(); 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    if (!captchaVerified) {
-      toast.error("Please verify the CAPTCHA.");
-      return;
-    }
 
     setLoading(true);
     try {
@@ -52,9 +45,6 @@ function SignUp() {
     } catch (error) {
       console.error("Error signing up:", error);
       toast.error(error.message || "An error occurred. Please try again.");
-      
-      setCaptchaVerified(false);
-      recaptchaRef.current.reset(); 
     } finally {
       setLoading(false);
     }
@@ -82,15 +72,11 @@ function SignUp() {
     }
   };
 
-  const handleCaptchaVerification = (value) => {
-    setCaptchaVerified(!!value);
-  };
-
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }} 
-      animate={{ opacity: 1, y: 0 }} 
-      transition={{ duration: 0.6, ease: "easeInOut" }} 
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeInOut" }}
       className="container mx-auto px-4 py-8 bg-gray-50"
     >
       <div className="flex justify-center items-center min-h-screen bg-gray-50 pt-20">
@@ -130,21 +116,15 @@ function SignUp() {
             required
             className="w-full p-4 mb-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <ReCAPTCHA
-            sitekey="6Lf63EoqAAAAAJLVIpWdZmg-pri-kVm-Lw2a2m5E" 
-            onChange={handleCaptchaVerification}
-            ref={recaptchaRef} 
-            className="mb-4"
-          />
           <button
             type="submit"
-            className={`w-full bg-blue-600 text-white py-2 rounded-lg font-semibold transition-all duration-200 ${loading || !captchaVerified ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
-            disabled={loading || !captchaVerified}
+            className={`w-full bg-blue-600 text-white py-2 rounded-lg font-semibold transition-all duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
+            disabled={loading}
           >
             {loading ? "Processing..." : "Sign Up"}
           </button>
           <div className="mt-4">
-            <button 
+            <button
               onClick={() => handleSocialSignUp(new GoogleAuthProvider())}
               className="w-full bg-red-500 text-white py-2 rounded-lg mb-2 hover:bg-red-600 transition duration-200"
             >
@@ -158,7 +138,10 @@ function SignUp() {
             </button>
           </div>
           <p className="mt-4 text-center text-gray-600">
-            Already have an account? <a href="/signin" className="text-blue-600 hover:underline">Sign In</a>
+            Already have an account?{" "}
+            <a href="/signin" className="text-blue-600 hover:underline">
+              Sign In
+            </a>
           </p>
         </form>
       </div>

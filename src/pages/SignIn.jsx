@@ -1,5 +1,5 @@
 // SignIn.jsx
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { auth, db } from "../firebase/config";
 import {
   signInWithEmailAndPassword,
@@ -12,25 +12,17 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/userSlice";
-import ReCAPTCHA from "react-google-recaptcha"; 
 import { motion } from 'framer-motion';
 
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [captchaVerified, setCaptchaVerified] = useState(false); 
-  const recaptchaRef = useRef(); 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    if (!captchaVerified) {
-      toast.error("Please verify the CAPTCHA.");
-      return;
-    }
-
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -41,9 +33,6 @@ function SignIn() {
     } catch (error) {
       console.error("Error signing in:", error);
       toast.error(error.message || "An error occurred. Please try again.");
-      
-      setCaptchaVerified(false);
-      recaptchaRef.current.reset(); 
     } finally {
       setLoading(false);
     }
@@ -69,10 +58,6 @@ function SignIn() {
       console.error("Error with social sign in:", error);
       toast.error(error.message || "An error occurred.");
     }
-  };
-
-  const handleCaptchaVerification = (value) => {
-    setCaptchaVerified(!!value);
   };
 
   return (
@@ -104,16 +89,10 @@ function SignIn() {
             required
             className="w-full p-4 mb-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <ReCAPTCHA
-            sitekey="6Lf63EoqAAAAAJLVIpWdZmg-pri-kVm-Lw2a2m5E" 
-            onChange={handleCaptchaVerification}
-            ref={recaptchaRef} 
-            className="mb-4"
-          />
           <button
             type="submit"
-            className={`w-full bg-blue-600 text-white py-2 rounded-lg font-semibold transition-all duration-200 ${loading || !captchaVerified ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"}`}
-            disabled={loading || !captchaVerified}
+            className={`w-full bg-blue-600 text-white py-2 rounded-lg font-semibold transition-all duration-200 ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"}`}
+            disabled={loading}
           >
             {loading ? "Processing..." : "Sign In"}
           </button>
